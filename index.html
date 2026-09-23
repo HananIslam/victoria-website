@@ -176,6 +176,7 @@
   .site-header{position:fixed; top:0; left:0; right:0; z-index:50; background:color-mix(in srgb, var(--paper) 94%, transparent); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-bottom:1px solid var(--line); padding-top:env(safe-area-inset-top, 0px)}
   .nav{display:flex; align-items:center; gap:.85rem; min-height:var(--header-h); position:relative}
   .brand{display:inline-flex; align-items:center; gap:.4rem; font-family:var(--font-display); font-weight:500; font-size:1.05rem; text-decoration:none; letter-spacing:-.01em; font-variation-settings:"SOFT" 80, "WONK" 1; margin-right:auto; white-space:nowrap; font-style:italic; min-width:0}
+  .brand small{font-style:italic; font-weight:400; opacity:.72; margin-right:.12em}
   .brand-mark{width:1.7rem; height:1.7rem; flex-shrink:0; border-radius:50%; overflow:hidden; background:#fff; box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--ink) 10%, transparent)}
   .brand-mark img{width:100%; height:100%; display:block; object-fit:cover; object-position:center; transform:scale(1.72); transform-origin:center}
   .nav-links{display:flex; gap:.15rem; list-style:none; margin:0; padding:0}
@@ -685,7 +686,7 @@
 
 <header class="site-header">
   <nav class="wrap nav" aria-label="Primary">
-    <a class="brand" href="/" aria-label="Dr. Victoria Verlezza, home"><span class="brand-mark" aria-hidden="true"><img src="photos/logo-mark-light-nav.png" alt="" width="256" height="256" decoding="async"></span> Victoria</a>
+    <a class="brand" href="/" aria-label="Dr. Victoria Verlezza, home"><span class="brand-mark" aria-hidden="true"><img src="photos/logo-mark-light-nav.png" alt="" width="256" height="256" decoding="async"></span><small>Dr.</small> Victoria</a>
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links">Menu</button>
     <ul class="nav-links" id="nav-links">
       <li><a href="#about">About</a></li>
@@ -694,9 +695,9 @@
       <li><a href="#consulting">Consulting</a></li>
       <li><a href="#ideas">Ideas</a></li>
       <li><a href="#assessment">Assessment</a></li>
-      <li class="nav-cta"><a class="btn btn-primary" href="#contact">Work With Victoria</a></li>
+      <li class="nav-cta"><a class="btn btn-primary" href="#contact">Work with Dr. Vee</a></li>
     </ul>
-    <a class="btn btn-primary" href="#contact">Work With Victoria</a>
+    <a class="btn btn-primary" href="#contact">Work with Dr. Vee</a>
   </nav>
 </header>
 <div class="nav-scrim" hidden></div>
@@ -712,7 +713,7 @@
         </h1>
         <p class="lede">Neuroinclusive leadership for <strong>engineering firms and STEAM organizations</strong> and the leaders responsible for how people think, meet, and work inside them.</p>
         <div class="actions">
-          <a class="btn btn-primary" href="#contact">Work With Victoria</a>
+          <a class="btn btn-primary" href="#contact">Work with Dr. Vee</a>
           <a class="btn btn-ghost" href="#assessment">Take the assessment</a>
         </div>
       </div>
@@ -782,13 +783,13 @@
   <section class="about" id="about" aria-labelledby="about-heading">
     <div class="about-essay">
       <div class="about-prose">
-        <h2 id="about-heading">Meet Victoria</h2>
+        <h2 id="about-heading">Meet Dr. Vee</h2>
         <p>Dr. Victoria Verlezza <span lang="en-US">(ver-LEZ-uh)</span> is a cognitive equity strategist based in Boston. With 20+ years supporting individuals and organizations, she helps teams, especially <strong>engineering firms and STEAM workplaces</strong>, build cultures that are equity-driven in practice, not only in name.</p>
         <p>She holds a PhD in Human Development, plus master’s degrees in Social Justice Education, Higher Education Administration, and Human Development. As a scholar-practitioner with lived experience, she brings both expertise and empathy to neurodivergence and systemic change.</p>
         <p>She has spoken with the ACLU. She teaches. She facilitates nationally. She is also the person who will make a room of executives laugh about their own meeting culture before asking them to redesign it.</p>
         <p>HR, DEI, L&amp;D, education, and non-profits are part of the work too. Engineering and STEAM are the focus, not a fence.</p>
         <div class="about-actions">
-          <a class="btn btn-primary" href="#contact">Work With Victoria</a>
+          <a class="btn btn-primary" href="#contact">Work with Dr. Vee</a>
           <a class="text-link" href="#ideas">See her writing and talks →</a>
         </div>
       </div>
