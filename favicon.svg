@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Victoria Verlezza">
+  <rect width="64" height="64" rx="12" fill="#FBF6EE"/>
+  <path d="M14 14 L32 52" stroke="#1E1B18" stroke-width="9" stroke-linecap="round"/>
+  <path d="M32 48 L50 12" stroke="#E4572E" stroke-width="9" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,21 @@
+{
+  "name": "Dr. Victoria Verlezza",
+  "short_name": "Victoria Verlezza",
+  "description": "Cognitive equity strategist for engineering firms and STEAM organizations.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FBF6EE",
+  "theme_color": "#1E1B18",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

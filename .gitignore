@@ -1,3 +1,8 @@
-# Local Netlify folder
 .netlify
 .vercel
+.env
+.env.*
+!.env.example
+.DS_Store
+.tmp-img/
+victoria folder/
