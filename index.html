@@ -177,8 +177,8 @@
   .nav{display:flex; align-items:center; gap:.85rem; min-height:var(--header-h); position:relative}
   .brand{display:inline-flex; align-items:center; gap:.4rem; font-family:var(--font-display); font-weight:500; font-size:1.05rem; text-decoration:none; letter-spacing:-.01em; font-variation-settings:"SOFT" 80, "WONK" 1; margin-right:auto; white-space:nowrap; font-style:italic; min-width:0}
   .brand small{font-style:italic; font-weight:400; opacity:.72; margin-right:.12em}
-  .brand-mark{width:1.7rem; height:1.7rem; flex-shrink:0; border-radius:50%; overflow:hidden; background:#fff; box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--ink) 10%, transparent)}
-  .brand-mark img{width:100%; height:100%; display:block; object-fit:cover; object-position:center; transform:scale(1.72); transform-origin:center}
+  .brand-mark{width:1.55rem; height:1.55rem; flex-shrink:0; display:grid; place-items:center}
+  .brand-mark img{width:100%; height:100%; display:block; object-fit:contain; object-position:center}
   .nav-links{display:flex; gap:.15rem; list-style:none; margin:0; padding:0}
   .nav-links a{text-decoration:none; padding:.5rem .7rem; border-radius:8px; font-weight:400; color:var(--ink-2)}
   .nav-links a:hover{color:var(--ink); background:var(--paper-2)}
@@ -193,7 +193,7 @@
   @media (max-width: 960px){
     .nav{justify-content:space-between; gap:.65rem}
     .brand{font-size:1rem; gap:.35rem}
-    .brand-mark{width:1.45rem; height:1.45rem}
+    .brand-mark{width:1.35rem; height:1.35rem}
     .nav-toggle{
       display:inline-flex; align-items:center; justify-content:center; order:3;
       background:var(--ink); color:var(--paper); border-color:var(--ink);
@@ -233,7 +233,7 @@
   }
   @media (max-width:560px){
     .brand{font-size:.98rem}
-    .brand-mark{width:1.35rem; height:1.35rem}
+    .brand-mark{width:1.25rem; height:1.25rem}
     .nav-toggle{padding:.42rem .8rem; font-size:.82rem; min-height:2.2rem}
   }
 
