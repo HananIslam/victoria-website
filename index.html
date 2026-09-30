@@ -1506,5 +1506,29 @@
   })();
 })();
 </script>
+<script>
+(function () {
+  try {
+    var key = 'vv_visitor';
+    var id = '';
+    try { id = localStorage.getItem(key) || ''; } catch (e) {}
+    if (!/^[A-Za-z0-9_-]{16,64}$/.test(id)) {
+      id = (Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2) + Date.now().toString(36))
+        .replace(/[^A-Za-z0-9_-]/g, '')
+        .slice(0, 40);
+      try { localStorage.setItem(key, id); } catch (e) {}
+    }
+    var body = JSON.stringify({
+      v: id,
+      p: location.pathname || '/',
+      r: document.referrer || '',
+      w: window.innerWidth || 0
+    });
+    var blob = new Blob([body], { type: 'application/json' });
+    if (navigator.sendBeacon) navigator.sendBeacon('/api/collect', blob);
+    else fetch('/api/collect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body, keepalive: true });
+  } catch (e) {}
+})();
+</script>
 </body>
 </html>

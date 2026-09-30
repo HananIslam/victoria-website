@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /audience/
+Disallow: /api/audience
 
 Sitemap: https://www.victoriaverlezza.com/sitemap.xml

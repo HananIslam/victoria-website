@@ -1,5 +1,17 @@
 {
+  "headers": [
+    {
+      "source": "/audience/(.*)",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive, nosnippet" },
+        { "key": "Cache-Control", "value": "private, no-store" },
+        { "key": "Referrer-Policy", "value": "no-referrer" },
+        { "key": "X-Frame-Options", "value": "DENY" }
+      ]
+    }
+  ],
   "rewrites": [
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
+    { "source": "/audience/:token", "destination": "/api/audience?token=:token" },
+    { "source": "/((?!api/|audience/).*)", "destination": "/index.html" }
   ]
 }
