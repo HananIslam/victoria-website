@@ -16,137 +16,111 @@ function percent(count, total) {
   return Math.max(0, Math.min(100, Math.round((count / total) * 100)));
 }
 
-function formatWhen(iso) {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return '';
-  return new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/New_York',
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  }).format(date);
+function flagEmoji(code) {
+  if (!/^[A-Z]{2}$/.test(code)) return '';
+  const points = [...code].map((char) => 0x1f1e6 + char.charCodeAt(0) - 65);
+  return String.fromCodePoint(...points);
 }
 
-function viewsEach(views, visitors) {
-  if (!visitors) return '';
-  const each = views / visitors;
-  const rounded = each >= 10 ? String(Math.round(each)) : String(Math.round(each * 10) / 10);
-  return `${rounded} ${each === 1 ? 'view' : 'views'} each`;
+function showDay(index, count) {
+  if (count <= 7) return true;
+  const step = count <= 30 ? 5 : 15;
+  return index % step === 0 || index === count - 1;
 }
 
-function changeLine(site, range) {
-  const delta = site.visitors - site.previousVisitors;
-  const label = `previous ${range} days`;
-  if (!site.visitors && !site.previousVisitors) return `Quiet, same as the ${label}`;
-  if (!site.previousVisitors && site.visitors) return `First visits in this stretch`;
-  if (delta > 0) return `${delta.toLocaleString('en-US')} more than the ${label}`;
-  if (delta < 0) return `${Math.abs(delta).toLocaleString('en-US')} fewer than the ${label}`;
-  return `Same number as the ${label}`;
+function totals(site) {
+  const views = `${site.views.toLocaleString('en-US')} ${site.views === 1 ? 'page view' : 'page views'}`;
+  return `<article class="total ${site.id}">
+    <h2>${escapeHtml(site.label)}</h2>
+    <p class="num">${site.visitors.toLocaleString('en-US')}</p>
+    <p class="meta">${views} · today ${site.todayVisitors.toLocaleString('en-US')} · all-time ${site.allVisitors.toLocaleString('en-US')}</p>
+  </article>`;
 }
 
-function sparkline(site) {
-  const series = site.series;
-  const peak = Math.max(1, ...series.map((day) => day.visitors));
-  const any = series.some((day) => day.visitors);
-  if (!any) return '';
-  const bars = series
-    .map((day) => {
-      const height = Math.round((day.visitors / peak) * 100);
-      const described = `${shortDay(day.day)}: ${day.visitors} visitors, ${day.views} page views`;
-      const style = height === 0 ? '' : ` style="height:${height}%"`;
-      return `<li title="${escapeHtml(described)}"><span class="tick${height === 0 ? ' is-zero' : ''}"${style}></span></li>`;
-    })
-    .join('');
-  return `<div class="spark" aria-hidden="true"><ol>${bars}</ol></div>`;
-}
-
-function sourceList(site) {
-  if (!site.views || !site.referrers.length) return '';
-  const items = site.referrers
-    .map(([name, count]) => {
-      const share = percent(count, site.views);
-      return `<li>
-        <span>${escapeHtml(name)}</span>
-        <span class="count">${count.toLocaleString('en-US')}</span>
-        <span class="track"><i style="width:${share}%"></i></span>
+function dailyChart(report) {
+  const website = report.sites.website.series;
+  const assessment = report.sites.assessment.series;
+  const any = website.some((day) => day.visitors) || assessment.some((day) => day.visitors);
+  if (!any) return '<p class="empty">No visits in this period.</p>';
+  const peak = Math.max(1, ...website.map((day) => day.visitors), ...assessment.map((day) => day.visitors));
+  const columns = website
+    .map((day, index) => {
+      const other = assessment[index];
+      const websiteHeight = Math.round((day.visitors / peak) * 100);
+      const assessmentHeight = Math.round((other.visitors / peak) * 100);
+      const dayLabel = showDay(index, website.length) ? escapeHtml(shortDay(day.day)) : '';
+      const tip = `${shortDay(day.day)} — website ${day.visitors}, assessment ${other.visitors}`;
+      return `<li title="${escapeHtml(tip)}">
+        <span class="cols">
+          <i class="website${websiteHeight ? '' : ' is-zero'}" style="height:${websiteHeight}%"></i>
+          <i class="assessment${assessmentHeight ? '' : ' is-zero'}" style="height:${assessmentHeight}%"></i>
+        </span>
+        <span class="day">${dayLabel}</span>
       </li>`;
     })
     .join('');
-  return `<h3>Came from</h3><ul class="sources">${items}</ul>`;
+  return `<p class="legend"><span><i class="website"></i>Website</span><span><i class="assessment"></i>Assessment</span></p>
+    <div class="chart-scroll"><ol class="chart chart-${website.length}">${columns}</ol></div>`;
 }
 
-function placeLine(site) {
-  if (!site.views || !site.countries.length) return '';
-  const places = site.countries
-    .slice(0, 2)
-    .map(([code, count]) => `${placeName(code)} ${percent(count, site.views)}%`);
-  return places.join(' · ');
+function barRows(entries, total, labelFor, tone) {
+  return `<ul class="bars ${tone}">${entries
+    .map(([key, count]) => {
+      const share = Math.max(percent(count, total), count ? 4 : 0);
+      return `<li>
+        <span class="name">${labelFor(key)}</span>
+        <span class="track"><i style="width:${share}%"></i></span>
+        <span class="n">${count.toLocaleString('en-US')}</span>
+      </li>`;
+    })
+    .join('')}</ul>`;
 }
 
-function deviceLine(site) {
-  if (!site.views) return '';
-  const totals = Object.fromEntries(site.devices);
-  const parts = DEVICE_ORDER
-    .map((name) => [name, totals[name] || 0])
-    .filter(([, count]) => count > 0)
-    .map(([name, count]) => `${name} ${percent(count, site.views)}%`);
-  return parts.join(' · ');
+function countryName(code) {
+  const flag = flagEmoji(code);
+  const name = escapeHtml(placeName(code));
+  return flag ? `<span class="flag" aria-hidden="true">${flag}</span>${name}` : name;
 }
 
-function pageLine(site) {
-  const extra = site.paths.filter(([path]) => path && path !== '/');
-  if (!extra.length) return '';
-  const text = extra
-    .map(([path, count]) => `${path} (${count.toLocaleString('en-US')})`)
-    .join(', ');
-  return `<p class="mix">Also opened ${escapeHtml(text)}</p>`;
+function sectionFor(report, title, pick) {
+  const blocks = ['website', 'assessment']
+    .map((id) => {
+      const site = report.sites[id];
+      const entries = pick(site).filter(([, count]) => count > 0);
+      if (!site.views || !entries.length) return '';
+      return `<div class="block"><h3>${escapeHtml(site.label)}</h3>${barRows(entries, site.views, (key) => escapeHtml(key), site.id)}</div>`;
+    })
+    .filter(Boolean);
+  if (!blocks.length) return '';
+  return `<section class="panel"><h2>${title}</h2><div class="blocks blocks-${blocks.length}">${blocks.join('')}</div></section>`;
 }
 
-function board(site, range) {
-  if (!site.visitors && !site.allVisitors) {
-    return `<article class="board ${site.id}">
-      <header>
-        <h2>${escapeHtml(site.label)}</h2>
-        <p>${escapeHtml(site.host)}</p>
-      </header>
-      <p class="figure"><strong>0</strong> <span>visitors</span></p>
-      <p class="sub">No visits yet.</p>
-    </article>`;
-  }
-  const each = viewsEach(site.views, site.visitors);
-  const detail = [placeLine(site), deviceLine(site)].filter(Boolean).join(' · ');
-  const cameBack = site.returning
-    ? `<li><span>Came back</span><strong>${site.returning.toLocaleString('en-US')}</strong></li>`
-    : '';
-  return `<article class="board ${site.id}">
-    <header>
-      <h2>${escapeHtml(site.label)}</h2>
-      <p>${escapeHtml(site.host)}</p>
-    </header>
-    <p class="figure"><strong>${site.visitors.toLocaleString('en-US')}</strong> <span>${site.visitors === 1 ? 'visitor' : 'visitors'}</span></p>
-    <p class="sub">${site.views.toLocaleString('en-US')} ${site.views === 1 ? 'page view' : 'page views'}${each ? ` · ${each}` : ''}</p>
-    <ul class="facts">
-      <li><span>Today</span><strong>${site.todayVisitors.toLocaleString('en-US')}</strong></li>
-      ${cameBack}
-      <li><span>All-time</span><strong>${site.allVisitors.toLocaleString('en-US')}</strong></li>
-    </ul>
-    <p class="delta">${escapeHtml(changeLine(site, range))}</p>
-    ${sparkline(site)}
-    ${sourceList(site)}
-    ${detail ? `<p class="mix">${escapeHtml(detail)}</p>` : ''}
-    ${pageLine(site)}
-  </article>`;
+function countries(report) {
+  const blocks = ['website', 'assessment']
+    .map((id) => {
+      const site = report.sites[id];
+      if (!site.views || !site.countries.length) return '';
+      return `<div class="block"><h3>${escapeHtml(site.label)}</h3>${barRows(site.countries, site.views, countryName, site.id)}</div>`;
+    })
+    .filter(Boolean);
+  if (!blocks.length) return '';
+  return `<section class="panel"><h2>Countries</h2><div class="blocks blocks-${blocks.length}">${blocks.join('')}</div></section>`;
+}
+
+function devices(site) {
+  const totalsByName = Object.fromEntries(site.devices);
+  return DEVICE_ORDER.map((name) => [name, totalsByName[name] || 0]).filter(([, count]) => count > 0);
 }
 
 function render(report) {
   const range = report.range;
-  const updated = formatWhen(report.generatedAt);
   const ranges = RANGES.map((value) => {
     const current = value === range ? ' aria-current="page"' : '';
     const label = value === 7 ? '7 days' : value === 30 ? '30 days' : '90 days';
     return `<a href="?range=${value}"${current}>${label}</a>`;
   }).join('');
+  const sources = sectionFor(report, 'Came from', (site) => site.referrers);
+  const deviceSection = sectionFor(report, 'Devices', devices);
 
   return `<!doctype html>
 <html lang="en">
@@ -160,7 +134,7 @@ function render(report) {
 <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fraunces:opsz,wght@9..144,500;9..144,650&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fraunces:opsz,wght@9..144,560;9..144,650&display=swap" rel="stylesheet">
 <style>
   :root {
     --paper:#FBF6EE; --paper-2:#F3EBDD; --ink:#1E1B18; --ink-2:#5A5249;
@@ -169,67 +143,55 @@ function render(report) {
     --font-body:"Atkinson Hyperlegible", system-ui, sans-serif;
   }
   * { box-sizing: border-box; }
-  html, body { margin: 0; background: var(--paper); color: var(--ink); }
-  body { font-family: var(--font-body); line-height: 1.45; padding: 1.4rem 1.1rem 2.5rem; }
-  main { max-width: 880px; margin: 0 auto; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-body); line-height: 1.4; padding: 1.25rem 1rem 2.5rem; }
+  main { max-width: 860px; margin: 0 auto; }
   a { color: inherit; }
-  .brand {
-    display: inline-flex; align-items: center; gap: .4rem;
-    font-family: var(--font-display); font-style: italic; font-weight: 500;
-    text-decoration: none; font-size: 1.02rem;
-  }
-  .brand img { width: 1.45rem; height: 1.45rem; object-fit: contain; }
-  .brand small { font-weight: 400; opacity: .72; margin-right: .08em; }
-  header.top { display: flex; justify-content: space-between; gap: 1rem; align-items: center; }
-  .lock { margin: 0; font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--sage); font-weight: 700; }
-  .intro { display: flex; justify-content: space-between; gap: 1rem; align-items: flex-end; margin: 1.3rem 0 1rem; }
-  h1 {
-    font-family: var(--font-display); font-weight: 650; font-size: clamp(2rem, 5vw, 2.7rem);
-    line-height: .95; letter-spacing: -.03em; margin: 0;
-  }
-  .lede { margin: .35rem 0 0; color: var(--ink-2); }
-  .ranges { display: flex; flex-wrap: wrap; gap: .4rem; }
-  .ranges a {
-    text-decoration: none; border: 1.5px solid var(--ink); border-radius: 999px;
-    padding: .35rem .8rem; font-weight: 700; font-size: .9rem;
-  }
+  .top { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+  .brand { display: inline-flex; align-items: center; gap: .4rem; font-family: var(--font-display); font-style: italic; text-decoration: none; font-size: 1.05rem; }
+  .brand img { width: 1.4rem; height: 1.4rem; }
+  .brand small { opacity: .7; margin-right: .08em; }
+  h1 { font-family: var(--font-display); font-weight: 650; font-size: 2.4rem; letter-spacing: -.03em; margin: 1.1rem 0 .8rem; }
+  .ranges { display: flex; gap: .4rem; margin: 0 0 1rem; }
+  .ranges a { text-decoration: none; border: 1.5px solid var(--ink); border-radius: 999px; padding: .32rem .75rem; font-weight: 700; }
   .ranges a[aria-current="page"] { background: var(--ink); color: var(--paper); }
-  .boards { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
-  .board {
-    background: #fffdf8; border: 1px solid var(--line); border-radius: 16px;
-    padding: 1rem 1rem 1.05rem; border-top: 4px solid var(--sage);
-  }
-  .board.assessment { border-top-color: var(--coral); }
-  .board header h2 { margin: 0; font-family: var(--font-display); font-size: 1.35rem; font-weight: 650; }
-  .board header p { margin: .1rem 0 0; color: var(--ink-2); font-size: .88rem; }
-  .figure { margin: .85rem 0 0; }
-  .figure strong {
-    font-family: var(--font-display); font-size: 3rem; font-weight: 650;
-    letter-spacing: -.04em; line-height: .9;
-  }
-  .figure span { color: var(--ink-2); font-size: 1rem; }
-  .sub, .delta, .mix { margin: .35rem 0 0; color: var(--ink-2); }
-  .facts { list-style: none; display: flex; gap: .8rem; margin: .85rem 0 0; padding: 0; }
-  .facts li { min-width: 4.5rem; }
-  .facts span { display: block; color: var(--ink-2); font-size: .75rem; letter-spacing: .04em; text-transform: uppercase; font-weight: 700; }
-  .facts strong { font-family: var(--font-display); font-size: 1.35rem; font-weight: 650; }
-  .spark { margin-top: .9rem; }
-  .spark ol { list-style: none; display: flex; align-items: flex-end; gap: 3px; height: 46px; margin: 0; padding: 0; }
-  .spark li { flex: 1; height: 100%; display: flex; align-items: flex-end; }
-  .spark .tick { display: block; width: 100%; height: 0; border-radius: 3px 3px 1px 1px; background: var(--sage); }
-  .board.assessment .spark .tick { background: var(--coral); }
-  .spark .tick.is-zero { height: 2px; opacity: .35; }
-  .board h3 { margin: .95rem 0 .4rem; font-size: .75rem; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-2); }
-  .sources { list-style: none; margin: 0; padding: 0; display: grid; gap: .4rem; }
-  .sources li { display: grid; grid-template-columns: 1fr auto; gap: .15rem .6rem; align-items: center; font-size: .95rem; }
-  .sources .count { color: var(--ink-2); }
-  .track { grid-column: 1 / -1; height: 5px; background: var(--paper-2); border-radius: 99px; overflow: hidden; }
-  .track i { display: block; height: 100%; background: var(--sage); }
-  .board.assessment .track i { background: var(--coral); }
-  .foot { margin: 1rem 0 0; color: var(--ink-2); font-size: .88rem; max-width: 40rem; }
-  @media (max-width: 760px) {
-    .intro, .boards { display: grid; grid-template-columns: 1fr; }
-    .figure strong { font-size: 2.6rem; }
+  .totals { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; }
+  .total { background: #fffdf8; border: 1px solid var(--line); border-radius: 16px; padding: .9rem 1rem 1rem; }
+  .total h2 { margin: 0; font-size: .95rem; font-weight: 700; }
+  .total.website h2 { color: var(--sage); }
+  .total.assessment h2 { color: var(--coral); }
+  .num { font-family: var(--font-display); font-size: 3.4rem; line-height: .9; font-weight: 650; margin: .25rem 0 .3rem; letter-spacing: -.04em; }
+  .meta, .who, .empty { color: var(--ink-2); margin: 0; }
+  .panel { margin-top: .85rem; background: #fffdf8; border: 1px solid var(--line); border-radius: 16px; padding: 1rem; }
+  .panel h2 { margin: 0 0 .8rem; font-size: 1rem; }
+  .block h3 { margin: 0 0 .55rem; font-size: .82rem; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-2); }
+  .legend { display: flex; gap: 1rem; margin: 0 0 .6rem; font-size: .92rem; }
+  .legend i { display: inline-block; width: .7rem; height: .7rem; border-radius: 2px; margin-right: .35rem; vertical-align: -1px; }
+  .legend .website, .bars.website .track i { background: var(--sage); }
+  .legend .assessment, .bars.assessment .track i { background: var(--coral); }
+  .chart-scroll { overflow-x: auto; }
+  .chart { list-style: none; display: flex; align-items: flex-end; gap: 6px; height: 210px; margin: 0; padding: 0 0 1.35rem; }
+  .chart-90 { min-width: 720px; }
+  .chart li { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; position: relative; min-width: 0; }
+  .cols { display: flex; align-items: flex-end; justify-content: center; gap: 3px; height: 100%; }
+  .cols i { display: block; width: 42%; max-width: 18px; border-radius: 5px 5px 2px 2px; }
+  .cols i.website { background: var(--sage); }
+  .cols i.assessment { background: var(--coral); }
+  .cols i.is-zero { height: 2px !important; opacity: .3; }
+  .day { position: absolute; left: 50%; bottom: -1.2rem; transform: translateX(-50%); font-size: .72rem; color: var(--ink-2); white-space: nowrap; }
+  .blocks { display: grid; gap: 1rem; }
+  .blocks-2 { grid-template-columns: 1fr 1fr; }
+  .bars { list-style: none; margin: 0; padding: 0; display: grid; gap: .55rem; }
+  .bars li { display: grid; grid-template-columns: minmax(7rem, 1fr) 1.4fr auto; gap: .45rem .6rem; align-items: center; }
+  .name { display: flex; align-items: center; gap: .4rem; min-width: 0; }
+  .flag { font-size: 1.15rem; line-height: 1; }
+  .track { height: 10px; background: var(--paper-2); border-radius: 99px; overflow: hidden; }
+  .track i { display: block; height: 100%; border-radius: inherit; }
+  .n { color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .who { margin-top: .35rem; font-size: .82rem; }
+  @media (max-width: 700px) {
+    .totals, .blocks-2, .bars li { grid-template-columns: 1fr; }
+    .num { font-size: 2.8rem; }
+    .track { grid-column: 1; }
   }
 </style>
 </head>
@@ -237,20 +199,20 @@ function render(report) {
 <main>
   <header class="top">
     <a class="brand" href="https://www.victoriaverlezza.com/" rel="noreferrer"><img src="/photos/logo-mark-light-nav.png" alt="" width="256" height="256"><span><small>Dr.</small> Victoria</span></a>
-    <p class="lock">Private</p>
   </header>
-  <div class="intro">
-    <div>
-      <h1>Audience</h1>
-      <p class="lede">Last ${range} days${updated ? ` · updated ${escapeHtml(updated)} ET` : ''}</p>
-    </div>
-    <nav class="ranges" aria-label="Date range">${ranges}</nav>
-  </div>
-  <section class="boards" aria-label="Sites">
-    ${board(report.sites.website, range)}
-    ${board(report.sites.assessment, range)}
+  <h1>Audience</h1>
+  <nav class="ranges" aria-label="Date range">${ranges}</nav>
+  <section class="totals" aria-label="Visitors">
+    ${totals(report.sites.website)}
+    ${totals(report.sites.assessment)}
   </section>
-  <p class="foot">Times are US Eastern. Someone who opens both sites counts on each. A refresh within 30 seconds does not count again. Bots, link previews, and the assessment admin are left out.</p>
+  <section class="panel">
+    <h2>Visitors per day</h2>
+    ${dailyChart(report)}
+  </section>
+  ${countries(report)}
+  ${sources}
+  ${deviceSection}
 </main>
 </body>
 </html>`;
