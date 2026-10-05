@@ -12,6 +12,7 @@
   ],
   "rewrites": [
     { "source": "/audience/:token", "destination": "/api/audience?token=:token" },
-    { "source": "/((?!api/|audience/).*)", "destination": "/index.html" }
+    { "source": "/assessment", "destination": "/assessment.html" },
+    { "source": "/((?!api/|audience/|assets/).*)", "destination": "/index.html" }
   ]
 }
