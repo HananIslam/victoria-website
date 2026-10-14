@@ -35,6 +35,17 @@
       if (window.matchMedia('(min-width:961px)').matches) closeNav();
     });
   }
+
+  /* Pause decorative spin when off-screen so it doesn't keep a compositor busy. */
+  var stampSvg = document.querySelector('.stamp svg');
+  if (stampSvg && 'IntersectionObserver' in window) {
+    var stampIo = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        stampSvg.style.animationPlayState = entry.isIntersecting ? 'running' : 'paused';
+      });
+    }, { rootMargin: '80px' });
+    stampIo.observe(stampSvg.closest('.stamp') || stampSvg);
+  }
 })();
 
 /* Private audience counter (first-party, no cookies). */

@@ -136,7 +136,7 @@
   .portrait img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:62% 18%; display:block}
   .portrait::after{content:""; position:absolute; inset:0; border-radius:inherit; box-shadow:inset 0 0 0 1px rgba(30,27,24,.08); pointer-events:none}
   .stamp{position:absolute; left:-2.2rem; bottom:1.4rem; width:7.6rem; height:7.6rem; border-radius:50%; background:var(--ink); color:var(--paper); display:grid; place-items:center; box-shadow:0 12px 30px -14px rgba(30,27,24,.6); z-index:1}
-  .stamp svg{width:100%; height:100%; animation:spin 26s linear infinite}
+  .stamp svg{width:100%; height:100%; animation:spin 26s linear infinite; will-change:transform}
   .stamp text{font-family:var(--font-body); font-weight:700; font-size:11px; letter-spacing:1.2px; fill:var(--paper)}
   .stamp .dot{position:absolute; width:.9rem; height:.9rem; border-radius:50%; background:var(--coral)}
   @keyframes spin{to{transform:rotate(360deg)}}
@@ -542,7 +542,7 @@
       <figure class="hero-media">
         <div class="portrait-wrap">
           <div class="portrait">
-            <img src="photos/victoria-portrait.jpg" alt="Dr. Victoria Verlezza standing on a beach at golden hour, smiling" width="960" height="1200" fetchpriority="high">
+            <img src="photos/victoria-portrait.jpg" alt="Dr. Victoria Verlezza standing on a beach at golden hour, smiling" width="960" height="1200" fetchpriority="high" decoding="async">
           </div>
           <div class="stamp decor" aria-hidden="true">
             <svg viewBox="0 0 120 120">
@@ -1262,12 +1262,23 @@
       if(interest && typeof window.setContactInterest==='function'){
         window.setContactInterest(interest);
       }
-      setTimeout(function(){
-        var panel=document.getElementById('lets-talk');
-        var focusTarget=panel && panel.querySelector('input[name="interest"]:checked');
-        if(!focusTarget) focusTarget=panel && panel.querySelector('input[type="radio"], button');
-        if(focusTarget) focusTarget.focus();
-      }, 600);
+      /* Focus after the smooth scroll settles — avoid fighting the scroll animation. */
+      var panel=document.getElementById('lets-talk') || document.getElementById('contact');
+      if(!panel) return;
+      var focused=false;
+      function focusPanel(){
+        if(focused) return;
+        focused=true;
+        var focusTarget=panel.querySelector('input[name="interest"]:checked')
+          || panel.querySelector('input[type="radio"], button');
+        if(focusTarget) focusTarget.focus({ preventScroll: true });
+      }
+      if('onscrollend' in window){
+        window.addEventListener('scrollend', focusPanel, { once: true });
+        setTimeout(focusPanel, 1200);
+      } else {
+        setTimeout(focusPanel, 700);
+      }
     });
   });
 
