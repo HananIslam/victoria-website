@@ -54,6 +54,7 @@ module.exports = async function handler(req, res) {
   const organization = String(body.organization || '').trim();
   const message = String(body.message || '').trim();
   const interest = String(body.interest || '').trim().toLowerCase();
+  const workshopTopic = String(body.workshopTopic || '').trim();
   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   if (!name || !email || !emailOk.test(email) || !message) {
@@ -70,26 +71,38 @@ module.exports = async function handler(req, res) {
     process.env.RESEND_FROM ||
     'Victoria Verlezza Website <noreply@assessment.victoriaverlezza.com>';
 
-  const text = [
+  const textLines = [
     'New enquiry from victoriaverlezza.com',
     '',
     `Interest: ${interestLabel}`,
+  ];
+  if (interest === 'workshop' && workshopTopic) {
+    textLines.push(`Workshop topic: ${workshopTopic}`);
+  }
+  textLines.push(
     `Name: ${name}`,
     `Email: ${email}`,
-    `Organization: ${organization || '—'}`,
+    `Organization: ${organization || '-'}`,
     '',
     'Message:',
-    message,
-  ].join('\n');
+    message
+  );
+  const text = textLines.join('\n');
+
+  const topicRow =
+    interest === 'workshop' && workshopTopic
+      ? `<tr><td style="padding:.35rem 0;color:#5A5249">Workshop topic</td><td style="padding:.35rem 0">${escapeHtml(workshopTopic)}</td></tr>`
+      : '';
 
   const html = `
     <div style="font-family:Georgia,serif;line-height:1.5;color:#1E1B18">
       <p style="margin:0 0 1rem;font-size:1.05rem"><strong>New enquiry</strong> from victoriaverlezza.com</p>
       <table style="border-collapse:collapse;width:100%;max-width:560px">
         <tr><td style="padding:.35rem 0;color:#5A5249;width:8rem">Interest</td><td style="padding:.35rem 0">${escapeHtml(interestLabel)}</td></tr>
+        ${topicRow}
         <tr><td style="padding:.35rem 0;color:#5A5249">Name</td><td style="padding:.35rem 0">${escapeHtml(name)}</td></tr>
         <tr><td style="padding:.35rem 0;color:#5A5249">Email</td><td style="padding:.35rem 0"><a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></td></tr>
-        <tr><td style="padding:.35rem 0;color:#5A5249">Organization</td><td style="padding:.35rem 0">${escapeHtml(organization || '—')}</td></tr>
+        <tr><td style="padding:.35rem 0;color:#5A5249">Organization</td><td style="padding:.35rem 0">${escapeHtml(organization || '-')}</td></tr>
       </table>
       <p style="margin:1.25rem 0 .35rem;color:#5A5249">Message</p>
       <p style="margin:0;white-space:pre-wrap">${escapeHtml(message)}</p>
