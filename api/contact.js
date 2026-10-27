@@ -7,6 +7,7 @@ const INTEREST_LABELS = {
   keynote: 'Keynote',
   workshop: 'Workshop',
   consulting: 'Consulting',
+  coaching: 'Coaching',
   other: 'Something else',
 };
 
