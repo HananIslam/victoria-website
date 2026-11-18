@@ -50,16 +50,7 @@ main > section{
 @media (max-width:560px){
   :root{ --header-h:3.35rem; }
 }
-/* Paper grain — static PNG tile (no SVG feTurbulence / mix-blend; those force costly
-   per-frame compositing while scrolling under a fixed overlay). */
-.grain{
-  position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.55;
-  background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAEI0lEQVR42r1by24jMQzTN0yAReECPXhuPM7/f9yih12kUz9ISskhKJpOHVuWKJFS4uvz4+Pr8+OYvED87ftnE/5vtE57eh3iWhA/sz8/H09vMB/Yyc2wz+8+EwMjZT/vxzNRZFkYB+0DL7jI9ZHwuONugJUruy9s3kPR2p0Mr2tlgJVVZ/+MRRyr7s2smzFWG4TAxYTAq4EQ5Ppt40n3SwKBEbgb4L6ZTmwIoruhwNDlYRnk4WaWRWIDrodgg+59AbJthgEO0nchXkECoZqCFZySQXAXClShkawDXPCkn4/NzTgbg4DOl3nwDCZ8X9DJ1gEw8i8KbhIEOMPc5w88CAOM7i7+bc0/JrAh6d6ud2xDYOeeEIqeLhQrK4S/nvYEgWDNLvFiC6F31eUQUyAEjMEuC0Ckrcci57qGwIt5w7/fH8/7D5Oesqh+f/4kSmiVIl+ZCjEKyAwSN4Mk2DWyOpxeWkziZMUJelGhwhKoU+ApcmoO4UZ31HTFzNg8vhJMDkO76Bv57YoCeurcaqaqRKXXxcKyELg/Y8CzADsUnZEydCwO7KS2nuD+KDwYbcwwQUWNO1fmUtSfUZ7fnmmUBq9EpeYUMl2s4mYG7FlFqIrudgPMIGQSBezaLqRj4DKdqAfwImGjmhmuiNEvD+gFWh4IQMTCnRVOwoi5nckCzu31hJrjaPmukrT1ojCRXDlkN8tiNivsRFGwHsAg8kEUSStX7Un2eS5Im0W7d3S4G/IWxLzdFiDltMfYchz3EKgWNXYIPMOVtmGGTdAQoOgBarw/NkXTLDafD8re1IPo/0EMzyEIgowxpwKcdWqPRJil+4OxWRxihdgElRmJOiMjqR3shEgF/x4VRDODNbMoc6S8phjAkcIrpXN85UXbY5UFzjfw8p5IYyBxwRJUQ9Dl3962Mj1SusAwKKbb6DyKwK3U+yLpVr2gK4xEdmApdV9hAJLgpfQOsmM2o/W7SIZwb4xU9dyq5gWymJMqhUHwf5g0mBlaYDkJiE4SBZKRqMqqR9aU5kxmlhArVdiZEkNhDVCJ9pR6FGLby1FyFOZ2DozbErix4ic/yNBIuGiCAZoIkBAJVcXEKZhBSQVsYGQFGOs2kR5L7bkwb+pVIOiwvJGRGhvOsamakBiBz8z5nEUG2+4hTMEj09lhdH2InuCKOcNJ0ZZUbmAAp3LLz+LoZajYkgfAnAFAwrOUaTSY3zST6gCYNFcdqVOnyEq+kRZkLndD4F2V4N2onTVsFGl1SGoCiirVBsRp1WFagnGI8cxOkDkKUekE6G2afesBGfUFRmrERjJXy+QZ49teRJhqq5LPWZ5xf64TrbjM13P+K0LsxOU1OXQntUIkU6Y6O0TVBZEAPYYGP17E+VVtYoovQVRrbTCJAVOkYCQvdmjb6Q38mir5CwadgRlpNXPvAAAAAElFTkSuQmCC");
-  background-repeat:repeat;
-  background-size:128px 128px;
-  transform:translateZ(0);
-  contain:paint;
-}
+/* Page surface is flat paper. A repeating grain tile read as noise on the hero. */
 a{color:inherit}
 :focus-visible{outline:3px solid var(--focus); outline-offset:3px; border-radius:4px}
 .skip-link{position:absolute; left:1rem; top:-4rem; background:var(--ink); color:var(--paper); padding:.6rem 1rem; border-radius:8px; z-index:100; text-decoration:none; font-weight:700}

@@ -115,6 +115,7 @@
     align-items:stretch;
     padding:calc(var(--header-h) + clamp(1.5rem,4vw,2.6rem)) 0 clamp(1.5rem,4vw,2.6rem);
     box-sizing:border-box;
+    background:var(--paper);
   }
   .hero::before,
   .hero::after{content:""; flex:1 1 0; min-height:0; pointer-events:none}
@@ -356,32 +357,47 @@
   .products-top .btn-ghost{color:var(--paper); border-color:color-mix(in srgb, var(--paper) 45%, transparent)}
   .products-top .btn-ghost:hover{background:var(--paper); color:var(--ink); border-color:var(--paper)}
 
-  .prod-feature{display:grid; grid-template-columns:minmax(13rem,.82fr) minmax(0,1.18fr); gap:clamp(1.4rem,3.5vw,2.6rem); align-items:center; background:var(--paper); color:var(--ink); border-radius:28px 28px 10px 28px; padding:clamp(1.35rem,3vw,2.15rem); position:relative; overflow:hidden; box-shadow:0 28px 60px -32px rgba(0,0,0,.6)}
-  .prod-feature::before{content:""; position:absolute; inset:0 auto auto 0; width:100%; height:5px; background:linear-gradient(90deg, var(--coral), var(--ochre))}
-  .prod-cover{position:relative; width:min(100%, 17rem); margin:1.1rem auto .4rem; isolation:isolate}
-  .prod-cover-shadow{position:absolute; inset:8% 4% 2% 10%; background:var(--ochre); border-radius:6px 16px 16px 6px; transform:rotate(5deg); z-index:0}
-  .prod-cover-front{position:relative; z-index:1; aspect-ratio:3/4; background:
-      radial-gradient(circle at 78% 18%, color-mix(in srgb, var(--coral) 16%, transparent) 0 28%, transparent 29%),
-      var(--paper-2);
-    border-radius:5px 16px 16px 5px; padding:1.35rem 1.2rem 1.15rem 1.55rem;
-    box-shadow:-10px 0 0 var(--coral), 14px 22px 42px -20px rgba(30,27,24,.5);
-    transform:rotate(-3.5deg); display:flex; flex-direction:column; overflow:hidden}
-  .prod-cover-front svg{position:absolute; right:-1.2rem; bottom:-1.4rem; width:11rem; height:11rem; opacity:.22; color:var(--coral); pointer-events:none}
-  .prod-cover-mark{margin:0; font-size:.72rem; letter-spacing:.16em; text-transform:uppercase; font-weight:700; color:var(--coral-deep)}
-  .prod-cover-title{margin:.85rem 0 0; font-family:var(--font-display); font-weight:500; font-size:clamp(1.85rem,3vw,2.35rem); line-height:1.02; letter-spacing:-.03em; font-variation-settings:"SOFT" 40, "WONK" 1}
-  .prod-cover-rule{width:3.2rem; height:.38rem; background:var(--ochre); border-radius:99px; margin:1rem 0 .85rem; transform:rotate(-2deg)}
-  .prod-cover-meta{margin:0; color:var(--ink-2); font-size:.92rem; line-height:1.35; max-width:11rem}
-  .prod-cover-by{margin:auto 0 0; font-family:var(--font-display); font-style:italic; font-size:.95rem; font-variation-settings:"SOFT" 90, "WONK" 1}
-  .prod-feature-copy{padding:.4rem .15rem .15rem; min-width:0}
-  .prod-kicker{display:flex; flex-wrap:wrap; gap:.45rem .65rem; align-items:center; margin:0 0 .7rem; font-size:.78rem; letter-spacing:.12em; text-transform:uppercase; font-weight:700; color:var(--ink-2)}
-  .prod-kicker .flag{background:var(--coral-deep); color:#fff; padding:.28rem .65rem; border-radius:99px; letter-spacing:.1em}
-  .prod-feature-copy h3{font-family:var(--font-display); font-size:clamp(1.85rem,3.2vw,2.55rem); margin:0 0 .55rem; font-weight:500; letter-spacing:-.03em; line-height:1.08}
-  .prod-feature-copy > p{margin:0 0 1.1rem; max-width:34rem; color:var(--ink-2); font-size:1.05rem}
-  .prod-insides{list-style:none; margin:0 0 1.35rem; padding:0; display:grid; gap:.45rem}
-  .prod-insides li{display:grid; grid-template-columns:1.05rem 1fr; gap:.65rem; align-items:start; font-weight:700; font-size:.98rem}
-  .prod-insides li::before{content:""; width:1.05rem; height:1.05rem; margin-top:.18rem; border-radius:50%; background:var(--ochre); background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%231E1B18' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 8.5l3 3 6-6'/%3E%3C/svg%3E"); background-size:75%; background-repeat:no-repeat; background-position:center}
+  .prod-feature{display:grid; grid-template-columns:minmax(11rem,.72fr) minmax(0,1.28fr); gap:clamp(1.5rem,3.5vw,2.8rem); align-items:center; background:var(--paper); color:var(--ink); border-radius:16px; padding:clamp(1.4rem,3vw,2rem); position:relative; overflow:hidden; box-shadow:0 24px 50px -28px rgba(0,0,0,.55)}
+  .prod-cover{position:relative; width:min(100%, 14.5rem); margin:0 auto; padding-right:9px; isolation:isolate}
+  .prod-cover::before,
+  .prod-cover::after{
+    content:""; position:absolute; z-index:0; pointer-events:none;
+  }
+  .prod-cover::before{
+    top:7%; bottom:4%; right:0; width:9px;
+    background:linear-gradient(180deg, #F3EBDD 0%, #DCCFB8 100%);
+    border-radius:0 8px 8px 0;
+    box-shadow:4px 12px 24px -12px rgba(30,27,24,.5);
+  }
+  .prod-cover::after{
+    top:11%; bottom:7%; right:4px; width:5px;
+    background:color-mix(in srgb, var(--paper) 88%, var(--ink));
+    border-radius:0 5px 5px 0; opacity:.9;
+  }
+  .prod-cover-front{
+    position:relative; z-index:1; aspect-ratio:3/4; color:var(--paper); border-radius:12px;
+    padding:1.45rem 1.25rem 1.25rem; display:flex; flex-direction:column; overflow:hidden;
+    background:
+      linear-gradient(115deg, transparent 42%, color-mix(in srgb, var(--paper) 7%, transparent) 49%, transparent 57%),
+      radial-gradient(ellipse 95% 75% at 112% -12%, color-mix(in srgb, var(--coral) 42%, transparent), transparent 56%),
+      radial-gradient(ellipse 60% 45% at -5% 105%, color-mix(in srgb, var(--ochre) 20%, transparent), transparent 60%),
+      linear-gradient(165deg, #322C27 0%, var(--ink) 46%, #100E0C 100%);
+    box-shadow:
+      inset 1px 0 0 color-mix(in srgb, var(--paper) 10%, transparent),
+      inset 0 1px 0 color-mix(in srgb, var(--paper) 18%, transparent),
+      inset 0 -28px 48px -30px rgba(0,0,0,.65),
+      0 26px 44px -18px rgba(30,27,24,.58),
+      0 10px 16px -10px rgba(30,27,24,.4);
+  }
+  .prod-cover-mark{margin:0; font-size:.68rem; letter-spacing:.14em; text-transform:uppercase; font-weight:700; color:color-mix(in srgb, var(--paper) 62%, transparent)}
+  .prod-cover-title{margin:1.15rem 0 0; font-family:var(--font-display); font-weight:500; font-size:clamp(1.55rem,2.6vw,1.95rem); line-height:1.08; letter-spacing:-.025em; font-variation-settings:"SOFT" 30, "WONK" 0; max-width:9.5ch}
+  .prod-cover-title::after{content:""; display:block; width:2.6rem; height:3px; margin-top:1.05rem; border-radius:99px; background:linear-gradient(90deg, var(--ochre), color-mix(in srgb, var(--coral) 55%, var(--ochre)))}
+  .prod-cover-by{margin:auto 0 0; font-family:var(--font-display); font-style:italic; font-size:.92rem; color:color-mix(in srgb, var(--paper) 78%, transparent); font-variation-settings:"SOFT" 90, "WONK" 1}
+  .prod-feature-copy{padding:.15rem 0; min-width:0}
+  .prod-feature-copy h3{font-family:var(--font-display); font-size:clamp(1.7rem,3vw,2.25rem); margin:0 0 .65rem; font-weight:500; letter-spacing:-.025em; line-height:1.12}
+  .prod-feature-copy > p{margin:0 0 1.35rem; max-width:34rem; color:var(--ink-2); font-size:1.05rem}
   .prod-feature-cta{display:flex; flex-wrap:wrap; gap:.75rem 1rem; align-items:center}
-  .prod-feature-cta .price{font-family:var(--font-display); font-size:1.65rem; font-weight:600; letter-spacing:-.02em}
+  .prod-feature-cta .price{font-family:var(--font-display); font-size:1.55rem; font-weight:600; letter-spacing:-.02em}
   .prod-feature-cta .btn{padding:.85rem 1.3rem}
 
   .shelf{display:grid; grid-template-columns:1fr 1fr; gap:1.1rem; margin-top:1.2rem}
@@ -412,8 +428,11 @@
   .products-more a:hover{color:var(--paper); text-decoration:underline}
 
   @media (max-width:860px){
-    .prod-feature{grid-template-columns:1fr; padding-top:1.6rem}
-    .prod-cover{width:min(100%, 15.5rem)}
+    .prod-feature{grid-template-columns:1fr; justify-items:center; text-align:center; padding-top:1.5rem}
+    .prod-cover{width:min(100%, 12.5rem)}
+    .prod-feature-copy{width:100%}
+    .prod-feature-copy > p{margin-inline:auto}
+    .prod-feature-cta{justify-content:center}
     .prod-rest{grid-template-columns:1fr}
   }
   @media (max-width:600px){
@@ -509,7 +528,6 @@
 </style>
 </head>
 <body>
-<div class="grain decor" aria-hidden="true"></div>
 <a class="skip-link" href="#main">Skip to content</a>
 
 <header class="site-header">
@@ -804,30 +822,15 @@
 
       <article class="prod-feature">
         <div class="prod-cover" aria-hidden="true">
-          <div class="prod-cover-shadow"></div>
           <div class="prod-cover-front">
-            <p class="prod-cover-mark">CELM™</p>
+            <p class="prod-cover-mark">Digital download</p>
             <p class="prod-cover-title">Cognitive Equity Toolkit</p>
-            <span class="prod-cover-rule"></span>
-            <p class="prod-cover-meta">Prompts, practices, and templates for the work</p>
             <p class="prod-cover-by">Dr. Victoria Verlezza</p>
-            <svg viewBox="0 0 160 160" fill="none" aria-hidden="true">
-              <circle cx="80" cy="80" r="70" stroke="currentColor" stroke-width="2"/>
-              <circle cx="80" cy="80" r="48" stroke="currentColor" stroke-width="2"/>
-              <circle cx="80" cy="80" r="26" stroke="currentColor" stroke-width="2"/>
-              <circle cx="80" cy="80" r="8" fill="currentColor"/>
-            </svg>
           </div>
         </div>
         <div class="prod-feature-copy">
-          <p class="prod-kicker"><span class="flag">Featured</span> Digital download</p>
           <h3>Cognitive Equity Toolkit</h3>
           <p>The work that sits behind the keynote. Reflection prompts, micro-practices, and templates aligned with the Cognitive Equity Leadership Model™ — for leaders who need it this week, not next quarter.</p>
-          <ul class="prod-insides">
-            <li>Reflection prompts</li>
-            <li>Micro-practices for meetings</li>
-            <li>Templates ready to use</li>
-          </ul>
           <div class="prod-feature-cta">
             <span class="price">$19.99</span>
             <a class="btn btn-primary" href="https://victoriavee.thinkific.com/products/digital_downloads/CognitiveEquityToolkit" target="_blank" rel="noopener noreferrer">Get the toolkit<span class="visually-hidden"> (opens in a new tab)</span></a>
