@@ -5,6 +5,7 @@ const {
   loadReport,
   normalizeRange,
   placeName,
+  safeEqual,
   shortDay,
   tokenMatches,
 } = require('../lib/analytics');
@@ -255,7 +256,12 @@ module.exports = async function handler(req, res) {
   }
 
   const token = req.query && typeof req.query.token === 'string' ? req.query.token : '';
-  if (!tokenMatches(token)) {
+  const wantsJson = Boolean(req.query && req.query.format === 'json');
+  // The dashboard's data feed has its own key (DASHBOARD_FEED_TOKEN). That key
+  // only unlocks the JSON feed, never this page.
+  const feedKey = process.env.DASHBOARD_FEED_TOKEN || '';
+  const feedAllowed = wantsJson && Boolean(feedKey) && Boolean(token) && safeEqual(token, feedKey);
+  if (!feedAllowed && !tokenMatches(token)) {
     res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
     res.setHeader('Cache-Control', 'private, no-store');
     return res.status(404).send('Not found');
@@ -263,6 +269,22 @@ module.exports = async function handler(req, res) {
 
   if (!analyticsReady()) {
     return sendHtml(res, 503, messagePage('Audience', 'Visitor tracking is not connected yet.'));
+  }
+
+  // Data feed for the admin dashboard (same secret token, JSON instead of a page).
+  if (wantsJson) {
+    res.setHeader('Cache-Control', 'private, no-store, max-age=0');
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+    try {
+      const data = await loadReport(normalizeRange(req.query.range), 12);
+      Object.values(data.sites).forEach((site) => {
+        site.countries = site.countries.map(([code, count]) => [code, count, placeName(code)]);
+      });
+      return res.status(200).json(data);
+    } catch (err) {
+      console.error('Audience feed failed', err && err.code ? err.code : 'error');
+      return res.status(500).json({ error: 'The visitor summary could not be loaded.' });
+    }
   }
 
   try {

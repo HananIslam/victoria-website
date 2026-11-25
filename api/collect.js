@@ -1,4 +1,6 @@
 const {
+  browserName,
+  systemName,
   cleanPath,
   countryCode,
   deviceClass,
@@ -100,6 +102,8 @@ module.exports = async function handler(req, res) {
       referrer: referrerLabel(typeof body.r === 'string' ? body.r : '', site),
       country: countryCode(req.headers['x-vercel-ip-country']),
       device: deviceClass(body.w, req.headers['user-agent']),
+      browser: browserName(req.headers['user-agent']),
+      system: systemName(req.headers['user-agent']),
     });
   } catch (err) {
     console.error('Visit was not recorded', err && err.code ? err.code : 'error');
