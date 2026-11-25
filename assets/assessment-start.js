@@ -23,9 +23,14 @@
 
   function normalizeEmail(v) { return String(v || '').trim().toLowerCase(); }
 
+  // Email-series opt-in from the form checkbox (unticked by default).
+  // Passed as optin=1 / optin=0 so the app knows the person's current choice.
+  var currentOptIn = null;
+
   function buildStartUrl(name, email, intent) {
     var url = ORIGIN + '/?name=' + encodeURIComponent(name) + '&email=' + encodeURIComponent(email);
     if (intent) url += '&intent=' + encodeURIComponent(intent);
+    if (currentOptIn !== null) url += '&optin=' + (currentOptIn ? '1' : '0');
     return url;
   }
 
@@ -225,6 +230,9 @@
 
       // Bots fill hidden fields; people don't. Silent no-op (no "stuck" busy state).
       if (honeypot && (honeypot.value || '').trim()) return;
+
+      var optInBox = form.querySelector('input[name="optin"]');
+      currentOptIn = optInBox ? Boolean(optInBox.checked) : null;
 
       setBusy(true);
       lookup(email).then(function (state) {

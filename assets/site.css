@@ -220,3 +220,10 @@ body.is-modal-open{overflow:hidden}
 @media (max-width:480px){
   .vv-resume__dialog{padding:1.5rem 1.25rem 1.3rem; border-radius:20px}
 }
+
+/* Email-series opt-in checkbox on assessment forms (unticked by default). */
+.field--check{display:flex; align-items:flex-start; gap:.6rem}
+.field--check input[type="checkbox"]{width:1.2rem; height:1.2rem; flex:0 0 auto; margin:.2rem 0 0; padding:0; accent-color:var(--ink); box-shadow:none}
+.field--check input[type="checkbox"]:focus-visible{outline:3px solid var(--focus, #1F5F5B); outline-offset:2px}
+.field--check label{margin:0; font-weight:400; font-size:.92rem; line-height:1.45}
+.start-panel .assessment-form .field--check input[type="checkbox"]{accent-color:var(--ochre)}
